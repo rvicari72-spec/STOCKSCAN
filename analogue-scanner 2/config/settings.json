@@ -1,0 +1,33 @@
+{
+  "sec_user_agent": "Your Name your.email@example.com",
+  "universe": {
+    "mode": "bulk",
+    "min_revenue_usd": 20000000,
+    "max_revenue_usd": 3000000000,
+    "max_public_float_usd": 15000000000,
+    "max_staleness_years": 2,
+    "min_features_present": 12
+  },
+  "market": {
+    "top_n_for_market_data": 150,
+    "min_avg_dollar_volume": 1000000,
+    "min_market_cap_usd": 100000000,
+    "max_market_cap_usd": 20000000000
+  },
+  "llm": {
+    "enabled": true,
+    "top_k": 25,
+    "model": "claude-sonnet-5-5",
+    "max_chars": 90000
+  },
+  "weights": {
+    "economics": 1.0,
+    "structure": 0.6,
+    "dependencies": 0.5,
+    "size": 0.6,
+    "kpis": 1.0,
+    "intercept": 0.8,
+    "filing_review": 0.6
+  },
+  "output_count": 60
+}

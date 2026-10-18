@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Analogue Scanner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --paper:#EDF0EC; --surface:#F7F8F5; --ink:#1C2730; --muted:#5B6871; --rule:#C9D1CC;
+  --cand:#1D5F78; --anal:#B07A12; --risk:#9C3D33; --good:#2F6B4A; --track:#DCE2DE;
+  --font:"Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#141B20; --surface:#1B242A; --ink:#E3E8E4; --muted:#93A0A6; --rule:#2E3A40;
+    --cand:#5FA9C4; --anal:#D9A440; --risk:#D6786C; --good:#7CBF95; --track:#26323A;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#141B20; --surface:#1B242A; --ink:#E3E8E4; --muted:#93A0A6; --rule:#2E3A40;
+  --cand:#5FA9C4; --anal:#D9A440; --risk:#D6786C; --good:#7CBF95; --track:#26323A;
+}
+*,*::before,*::after{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 15px/1.5 var(--font);font-variant-numeric:tabular-nums}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--cand);outline-offset:2px}
+a{color:var(--cand)}
+
+.wrap{max-width:1320px;margin:0 auto;padding:28px 24px 64px}
+header.top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:12px 32px;border-bottom:1px solid var(--rule);padding-bottom:18px}
+h1{font-size:30px;line-height:1.1;font-weight:800;letter-spacing:-0.02em;margin:0}
+.lede{color:var(--muted);margin:6px 0 0;max-width:62ch}
+.meta{color:var(--muted);font-size:13px;text-align:right}
+@media (max-width:860px){.meta{text-align:left}}
+.tabs{display:flex;gap:4px;margin:18px 0 0}
+.tabs button{background:none;border:1px solid transparent;border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:600;color:var(--muted)}
+.tabs button[aria-selected="true"]{color:var(--ink);border-color:var(--rule);background:var(--surface)}
+.banner{margin:16px 0 0;padding:10px 14px;border-left:3px solid var(--anal);background:var(--surface);font-size:14px}
+
+.layout{display:grid;grid-template-columns:minmax(300px,400px) 1fr;gap:28px;margin-top:22px}
+@media (max-width:860px){.layout{grid-template-columns:1fr}}
+
+details.weights{background:var(--surface);border:1px solid var(--rule);border-radius:8px;padding:10px 14px;margin-bottom:14px}
+details.weights summary{cursor:pointer;font-weight:600}
+.wgrid{display:grid;grid-template-columns:1fr auto;gap:6px 12px;align-items:center;margin-top:10px;font-size:14px}
+.wgrid input[type=range]{width:130px;accent-color:var(--cand)}
+.wgrid output{display:inline-block;width:2.4em;text-align:right;color:var(--muted)}
+.filters{display:flex;gap:8px;margin-bottom:10px}
+.filters input{flex:1;min-width:0;background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:7px 10px}
+
+ol.list{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule);max-height:calc(100vh - 220px);overflow-y:auto}
+@media (max-width:860px){ol.list{max-height:46vh}}
+ol.list li{border-bottom:1px solid var(--rule)}
+ol.list button{display:grid;grid-template-columns:2.2em 1fr auto;gap:2px 10px;width:100%;text-align:left;background:none;border:0;padding:11px 6px;cursor:pointer}
+ol.list button[aria-current="true"]{background:var(--surface);box-shadow:inset 3px 0 0 var(--cand)}
+.rank{color:var(--muted);font-size:13px;padding-top:2px}
+.tk{font-weight:700}
+.nm{color:var(--muted);font-size:13px;grid-column:2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.like{grid-column:2;font-size:13px}
+.like b{color:var(--anal);font-weight:600}
+.sc{grid-row:1/4;grid-column:3;font-size:22px;font-weight:700;align-self:center}
+
+section.detail{min-width:0}
+.dhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+.dhead h2{font-size:34px;line-height:1.05;margin:0;font-weight:800;letter-spacing:-0.02em}
+.dhead .co{font-size:17px;color:var(--muted)}
+.facts{display:flex;flex-wrap:wrap;gap:6px 26px;margin:12px 0 4px;font-size:14px;color:var(--muted)}
+.facts strong{color:var(--ink);font-weight:600}
+
+.match{margin:22px 0 8px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.match p{margin:0;font-size:17px;max-width:60ch}
+.match .who{color:var(--anal);font-weight:700}
+.analogue-switch{display:flex;gap:6px;flex-wrap:wrap}
+.analogue-switch button{border:1px solid var(--rule);background:var(--surface);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:13px}
+.analogue-switch button[aria-pressed="true"]{border-color:var(--anal);box-shadow:inset 0 0 0 1px var(--anal)}
+
+.legend{display:flex;gap:18px;font-size:13px;color:var(--muted);margin:10px 0 6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.legend .c{background:var(--cand)} .legend .a{border:2px solid var(--anal)}
+
+.align{border-top:2px solid var(--ink)}
+.grp{display:grid;grid-template-columns:1fr auto;align-items:baseline;padding:12px 0 4px;border-bottom:1px solid var(--rule)}
+.grp h3{margin:0;font-size:15px;font-weight:700}
+.grp .gs{font-size:15px;font-weight:700}
+.grp .gs small{font-weight:400;color:var(--muted);font-size:12px;margin-left:4px}
+.frow{display:grid;grid-template-columns:minmax(120px,210px) 1fr minmax(118px,auto);gap:12px;align-items:center;padding:6px 0;font-size:13px}
+.frow .fl{color:var(--muted)}
+.frow .fv{text-align:right;white-space:nowrap}
+.frow .fv .cv{color:var(--cand);font-weight:600}
+.frow .fv .av{color:var(--anal)}
+.trk{position:relative;height:16px}
+.trk::before{content:"";position:absolute;left:0;right:0;top:7px;height:2px;background:var(--track)}
+.trk .mid{position:absolute;left:50%;top:2px;width:1px;height:12px;background:var(--rule)}
+.trk .gap{position:absolute;top:7px;height:2px;background:var(--muted);opacity:.45}
+.trk .dc{position:absolute;top:3px;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--cand)}
+.trk .da{position:absolute;top:2px;width:12px;height:12px;margin-left:-6px;border-radius:50%;border:2px solid var(--anal)}
+@media (max-width:560px){.frow{grid-template-columns:1fr minmax(100px,auto)}.frow .trk{grid-column:1/3;grid-row:2}}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:30px}
+@media (max-width:980px){.cols{grid-template-columns:1fr}}
+.cols h3{font-size:17px;margin:0 0 8px;font-weight:700}
+.sigs{list-style:none;margin:0;padding:0}
+.sigs li{padding:7px 0 7px 22px;border-bottom:1px solid var(--rule);position:relative;font-size:14px}
+.sigs li::before{content:"";position:absolute;left:4px;top:13px;width:8px;height:8px;border-radius:2px;background:var(--good)}
+.sigs.flags li::before{background:var(--risk)}
+.bars{display:grid;grid-template-columns:auto 1fr 2em;gap:6px 10px;align-items:center;font-size:13px;margin:6px 0 14px}
+.bars .b{height:6px;background:var(--track);border-radius:3px;overflow:hidden}
+.bars .b span{display:block;height:100%;background:var(--risk)}
+.bars .b.t span{background:var(--good)}
+.prose p{margin:0 0 10px;max-width:68ch}
+.prose .k{color:var(--muted);font-size:13px;display:block}
+.empty{color:var(--muted);font-size:14px}
+
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0 28px;margin-top:22px}
+.lib article{border-top:2px solid var(--ink);padding:12px 0 18px}
+.lib h3{margin:0;font-size:20px;font-weight:800}
+.lib h3 span{font-weight:500;color:var(--muted);font-size:15px;margin-left:6px}
+.lib .arch{color:var(--anal);font-weight:600;font-size:14px;margin:2px 0 6px}
+.lib p{margin:0 0 10px;font-size:14px}
+.lib dl{display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin:0;font-size:13px}
+.lib dt{color:var(--muted)} .lib dd{margin:0;text-align:right}
+
+footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--rule);color:var(--muted);font-size:13px;max-width:80ch}
+.hidden{display:none!important}
+@media (prefers-reduced-motion:no-preference){.trk .dc,.trk .da,.trk .gap{transition:left .35s ease,width .35s ease}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Analogue Scanner</h1>
+      <p class="lede">Listed companies whose financial fingerprint today most resembles past multibaggers in the year before their run, ranked with the early signals that let you catch them.</p>
+    </div>
+    <div class="meta" id="meta">Loading scan…</div>
+  </header>
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-view="cands">Candidates</button>
+    <button role="tab" aria-selected="false" data-view="lib">Analogue library</button>
+  </div>
+  <div id="banner" class="banner hidden"></div>
+
+  <div id="view-cands" class="layout">
+    <aside>
+      <details class="weights">
+        <summary>Scoring weights</summary>
+        <div class="wgrid" id="wgrid"></div>
+      </details>
+      <div class="filters"><input id="q" type="search" placeholder="Filter by ticker, name or analogue" aria-label="Filter candidates"></div>
+      <ol class="list" id="list"></ol>
+    </aside>
+    <section class="detail" id="detail" aria-live="polite"></section>
+  </div>
+
+  <div id="view-lib" class="hidden"><div class="lib" id="lib"></div></div>
+
+  <footer>
+    Research tool, not investment advice. Similarity to past winners is a hypothesis generator: the seed list carries survivorship bias, many companies shared these traits and went nowhere, and SEC XBRL data has gaps and tagging inconsistencies. Verify every figure in the filings before acting.
+  </footer>
+</div>
+
+<script>
+const GROUP_NAMES={economics:"Economics",structure:"Structure",dependencies:"Dependencies",size:"Size",kpis:"KPIs",intercept:"Intercept signals",filing_review:"10-K dependency review"};
+const GROUP_NOTES={economics:"margins, cash generation, returns",structure:"dilution, balance sheet",dependencies:"capital, R&D and selling intensity",size:"revenue and public float",kpis:"growth, acceleration, leverage"};
+let D=null, W={}, sel=null, anIdx=0;
+
+function store(k,v){try{v===undefined?null:localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function recall(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null}catch(e){return null}}
+
+const pct=v=>v==null?"–":(v*100).toFixed(Math.abs(v)<0.1?1:0)+"%";
+const usd=v=>{if(v==null)return"–";const a=Math.abs(v);return a>=1e9?"$"+(v/1e9).toFixed(1)+"B":a>=1e6?"$"+(v/1e6).toFixed(0)+"M":"$"+Math.round(v)};
+const fmt=(k,v)=>v==null?"–":k.startsWith("log_")?usd(Math.pow(10,v)):k==="debt_to_equity"?v.toFixed(2)+"×":pct(v);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+async function load(){
+  let res=await fetch("data/scan.json",{cache:"no-store"}).catch(()=>null);
+  if(!res||!res.ok) res=await fetch("data/demo/scan.json",{cache:"no-store"}).catch(()=>null);
+  if(!res||!res.ok){document.getElementById("meta").textContent="No scan found. Run the workflow from the Actions tab to create data/scan.json.";return}
+  D=await res.json();
+  W=Object.assign({},D.weights,recall("weights")||{});
+  const when=new Date(D.generated).toLocaleDateString(undefined,{day:"numeric",month:"short",year:"numeric"});
+  document.getElementById("meta").innerHTML=`Scan of ${when}<br>${D.universe_scored.toLocaleString()} companies fingerprinted against ${D.fingerprints.length} analogues`;
+  if(D.demo){const b=document.getElementById("banner");b.classList.remove("hidden");b.textContent="Showing synthetic demo data with fictional companies. Run the scan workflow to replace it with real results.";}
+  buildWeights(); rescore(); renderLib();
+}
+
+function composite(c){
+  const comps=Object.assign({},c.groups,{intercept:c.intercept?.score??null,filing_review:c.filing?.score??null});
+  let n=0,d=0; for(const k in W){const v=comps[k]; if(v!=null){n+=W[k]*v;d+=W[k]}}
+  return d?n/d:0;
+}
+function rescore(){
+  D.candidates.forEach(c=>c._s=composite(c));
+  D.candidates.sort((a,b)=>b._s-a._s);
+  if(!sel) sel=D.candidates[0]?.ticker;
+  renderList(); renderDetail();
+}
+
+function buildWeights(){
+  const g=document.getElementById("wgrid"); g.innerHTML="";
+  for(const k of Object.keys(D.weights)){
+    const id="w-"+k;
+    g.insertAdjacentHTML("beforeend",`<label for="${id}">${GROUP_NAMES[k]||k}</label><span><input id="${id}" type="range" min="0" max="2" step="0.1" value="${W[k]}"><output>${(+W[k]).toFixed(1)}</output></span>`);
+    const inp=g.querySelector("#"+id);
+    inp.addEventListener("input",()=>{W[k]=+inp.value;inp.nextElementSibling.textContent=(+inp.value).toFixed(1);store("weights",W);rescore()});
+  }
+  g.insertAdjacentHTML("beforeend",`<span></span><span><button type="button" id="wreset" style="background:none;border:1px solid var(--rule);border-radius:6px;padding:3px 10px;cursor:pointer">Reset weights</button></span>`);
+  g.querySelector("#wreset").onclick=()=>{W=Object.assign({},D.weights);store("weights",W);buildWeights();rescore()};
+}
+
+function seedOf(id){return D.fingerprints.find(f=>f.id===id)}
+
+function renderList(){
+  const q=document.getElementById("q").value.trim().toLowerCase();
+  const ol=document.getElementById("list"); ol.innerHTML="";
+  D.candidates.forEach((c,i)=>{
+    const s=seedOf(c.analogues[0]?.seed);
+    const hay=(c.ticker+" "+c.name+" "+(s?s.ticker+" "+s.archetype:"")).toLowerCase();
+    if(q&&!hay.includes(q))return;
+    const li=document.createElement("li");
+    li.innerHTML=`<button aria-current="${c.ticker===sel}"><span class="rank">${i+1}</span><span class="tk">${esc(c.ticker)}</span><span class="sc">${Math.round(c._s)}</span><span class="nm">${esc(c.name)}</span><span class="like">Like <b>${s?esc(s.ticker)+" in "+s.start_year:"–"}</b></span></button>`;
+    li.querySelector("button").onclick=()=>{sel=c.ticker;anIdx=0;renderList();renderDetail();if(innerWidth<860)document.getElementById("detail").scrollIntoView({behavior:"smooth"})};
+    ol.appendChild(li);
+  });
+  if(!ol.children.length) ol.innerHTML=`<li class="empty" style="padding:12px 6px">No candidates match that filter.</li>`;
+}
+
+const X=z=>z==null?null:((Math.max(-3,Math.min(3,z))+3)/6*100);
+
+function renderDetail(){
+  const c=D.candidates.find(x=>x.ticker===sel), el=document.getElementById("detail");
+  if(!c){el.innerHTML=`<p class="empty">Select a company to compare it with its closest analogue.</p>`;return}
+  const a=c.analogues[anIdx]||c.analogues[0], s=seedOf(a.seed), m=c.market||{}, f=c.filing;
+  const yahoo=`https://finance.yahoo.com/quote/${encodeURIComponent(c.ticker)}`;
+  const edgar=c.cik?`https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${c.cik}&type=10-K`:null;
+
+  let rows="";
+  for(const [g,feats] of Object.entries(D.feature_groups)){
+    const gs=a.groups[g];
+    rows+=`<div class="grp"><h3>${GROUP_NAMES[g]} <span style="font-weight:400;color:var(--muted);font-size:13px">${GROUP_NOTES[g]}</span></h3><span class="gs">${gs==null?"–":Math.round(gs)}<small>match</small></span></div>`;
+    for(const k of feats){
+      const zc=X(c.z[k]), za=X(s.z[k]);
+      const gap=zc!=null&&za!=null?`<span class="gap" style="left:${Math.min(zc,za)}%;width:${Math.abs(zc-za)}%"></span>`:"";
+      rows+=`<div class="frow"><span class="fl">${esc(D.labels[k])}</span><span class="trk" aria-hidden="true"><span class="mid"></span>${gap}${za!=null?`<span class="da" style="left:${za}%"></span>`:""}${zc!=null?`<span class="dc" style="left:${zc}%"></span>`:""}</span><span class="fv"><span class="cv">${fmt(k,c.features[k])}</span> · <span class="av">${fmt(k,s.features[k])}</span></span></div>`;
+    }
+  }
+
+  const sigs=(c.intercept?.signals||[]).map(x=>`<li>${esc(x)}</li>`).join("")||`<li class="empty" style="padding-left:0">No intercept signals fired.</li>`;
+  let review=`<p class="empty">No filing review for this company. Reviews run for the top-ranked companies when an Anthropic API key is set as a repository secret.</p>`;
+  if(f){
+    const bar=(lbl,v,cls="")=>v==null?"":`<span>${lbl}</span><span class="b ${cls}"><span style="width:${v*10}%"></span></span><span>${v}</span>`;
+    review=`<div class="bars">${bar("Customer concentration",f.customer_concentration)}${bar("Supplier dependence",f.supplier_dependence)}${bar("Regulatory dependence",f.regulatory_dependence)}${bar("Platform dependence",f.platform_dependence)}${bar("Secular tailwind",f.secular_tailwind,"t")}</div>
+    <div class="prose">
+      ${f.top_customer_share_pct!=null?`<p><span class="k">Largest customer</span>${f.top_customer_share_pct}% of revenue</p>`:""}
+      <p><span class="k">Business model</span>${esc(f.business_model)}</p>
+      <p><span class="k">Moat</span>${esc(f.moat)}</p>
+      <p><span class="k">Versus ${esc(s.ticker)} in ${s.start_year}</span>${esc(f.analogue_comment)}</p>
+      <p><span class="k">What has to go right</span>${esc(f.thesis)}</p>
+    </div>
+    ${(f.key_dependencies||[]).length?`<h3 style="font-size:15px;margin:14px 0 4px">Key dependencies</h3><ul class="sigs flags">${f.key_dependencies.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
+    ${(f.red_flags||[]).length?`<h3 style="font-size:15px;margin:14px 0 4px">Red flags</h3><ul class="sigs flags">${f.red_flags.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
+    ${f.filing_url?`<p style="font-size:13px"><a href="${esc(f.filing_url)}" target="_blank" rel="noopener">Open the 10-K reviewed</a></p>`:""}`;
+  }
+
+  el.innerHTML=`
+  <div class="dhead"><h2>${esc(c.ticker)}</h2><span class="co">${esc(c.name)}</span></div>
+  <div class="facts">
+    <span>Score <strong>${Math.round(c._s)}</strong></span>
+    <span>Revenue FY${c.year} <strong>${usd(c.raw?.revenue)}</strong></span>
+    <span>Growth <strong>${pct(c.features.rev_growth)}</strong></span>
+    <span>Market cap <strong>${usd(m.market_cap)}</strong></span>
+    ${m.industry?`<span>${esc(m.industry)}</span>`:""}
+    <span><a href="${yahoo}" target="_blank" rel="noopener">Yahoo Finance</a>${edgar?` · <a href="${edgar}" target="_blank" rel="noopener">SEC filings</a>`:""}</span>
+  </div>
+  <div class="match">
+    <p>Its numbers today look most like <span class="who">${esc(s.ticker)} in ${s.start_year}</span>, a ${esc(s.archetype.toLowerCase())}: ${esc(s.story.charAt(0).toLowerCase()+s.story.slice(1))}. Overall match ${Math.round(a.overall)}.</p>
+  </div>
+  <div class="analogue-switch" aria-label="Compare with another analogue">${c.analogues.map((x,i)=>{const sx=seedOf(x.seed);return `<button aria-pressed="${i===anIdx}" data-i="${i}">${esc(sx.ticker)} ${sx.start_year} · ${Math.round(x.overall)}</button>`}).join("")}</div>
+  <div class="legend"><span><i class="c"></i>${esc(c.ticker)} today</span><span><i class="a"></i>${esc(s.ticker)} in ${s.start_year}</span><span>Centre line is the median listed company</span></div>
+  <div class="align">${rows}</div>
+  <div class="cols">
+    <div><h3>Intercept signals <span style="font-weight:400;color:var(--muted)">${c.intercept?.score??"–"} / 100</span></h3><ul class="sigs">${sigs}</ul>
+      <div class="facts" style="margin-top:12px">
+        <span>Insiders <strong>${pct(m.insider_own)}</strong></span><span>Institutions <strong>${pct(m.institutional_own)}</strong></span>
+        <span>Analysts <strong>${m.analysts??"–"}</strong></span><span>12-month return <strong>${pct(m.ret_12m)}</strong></span><span>Short interest <strong>${pct(m.short_float)}</strong></span>
+      </div></div>
+    <div><h3>10-K dependency review ${f?.score!=null?`<span style="font-weight:400;color:var(--muted)">${Math.round(f.score)} / 100</span>`:""}</h3>${review}</div>
+  </div>`;
+  el.querySelectorAll(".analogue-switch button").forEach(b=>b.onclick=()=>{anIdx=+b.dataset.i;renderDetail()});
+}
+
+function renderLib(){
+  document.getElementById("lib").innerHTML=D.fingerprints.map(s=>{
+    const n=D.candidates.filter(c=>c.analogues[0]?.seed===s.id).length;
+    return `<article><h3>${esc(s.ticker)}<span>${s.start_year}</span></h3><div class="arch">${esc(s.archetype)}</div><p>${esc(s.story)}</p>
+    <dl><dt>Revenue</dt><dd>${fmt("log_revenue",s.features.log_revenue)}</dd><dt>Revenue growth</dt><dd>${pct(s.features.rev_growth)}</dd>
+    <dt>Gross margin</dt><dd>${pct(s.features.gross_margin)}</dd><dt>Operating margin</dt><dd>${pct(s.features.op_margin)}</dd>
+    <dt>Free cash flow margin</dt><dd>${pct(s.features.fcf_margin)}</dd><dt>Current candidates matching</dt><dd>${n}</dd></dl></article>`}).join("");
+}
+
+document.getElementById("q").addEventListener("input",renderList);
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  document.getElementById("view-cands").classList.toggle("hidden",b.dataset.view!=="cands");
+  document.getElementById("view-lib").classList.toggle("hidden",b.dataset.view!=="lib");
+});
+load();
+</script>
+</body>
+</html>

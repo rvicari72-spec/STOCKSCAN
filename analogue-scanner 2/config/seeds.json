@@ -1,0 +1,21 @@
+{
+  "_note": "Companies that went on to deliver very large returns, with the calendar year BEFORE the run began. The agent rebuilds each fingerprint from SEC filings for that year. Edit freely: add your own, change years, retag archetypes. Years are approximate starting points, not exact bottoms.",
+  "seeds": [
+    {"ticker": "NVDA", "start_year": 2015, "archetype": "Platform compounder", "story": "GPU franchise before data-centre and AI demand took off"},
+    {"ticker": "AMD",  "start_year": 2015, "archetype": "Turnaround", "story": "Near-distressed chipmaker before the Zen product cycle"},
+    {"ticker": "ANET", "start_year": 2015, "archetype": "Picks and shovels", "story": "Cloud networking supplier to hyperscalers"},
+    {"ticker": "MPWR", "start_year": 2012, "archetype": "Quiet compounder", "story": "Power semis, steady share gains, high margins"},
+    {"ticker": "NFLX", "start_year": 2012, "archetype": "Platform compounder", "story": "Post-Qwikster trough, streaming scale economics"},
+    {"ticker": "TTD",  "start_year": 2016, "archetype": "Platform compounder", "story": "Profitable ad-tech platform at IPO"},
+    {"ticker": "AXON", "start_year": 2017, "archetype": "Hardware to recurring", "story": "TASER shifting to cloud and body-cam subscriptions"},
+    {"ticker": "ENPH", "start_year": 2018, "archetype": "Turnaround", "story": "Microinverters, margin repair, then solar demand"},
+    {"ticker": "CROX", "start_year": 2017, "archetype": "Consumer brand breakout", "story": "Brand reset, store closures, margin expansion"},
+    {"ticker": "CELH", "start_year": 2019, "archetype": "Consumer brand breakout", "story": "Small energy drink with accelerating distribution"},
+    {"ticker": "TSLA", "start_year": 2019, "archetype": "Scale inflection", "story": "Model 3 ramp, first sustained profitability"},
+    {"ticker": "ELF",  "start_year": 2020, "archetype": "Consumer brand breakout", "story": "Value cosmetics gaining share with Gen Z"},
+    {"ticker": "SMCI", "start_year": 2022, "archetype": "Picks and shovels", "story": "Server maker before AI rack demand"},
+    {"ticker": "APP",  "start_year": 2022, "archetype": "Operating leverage", "story": "Ad-tech pivot, margin explosion"},
+    {"ticker": "PLTR", "start_year": 2022, "archetype": "Operating leverage", "story": "Path to GAAP profitability, commercial growth"},
+    {"ticker": "CVNA", "start_year": 2022, "archetype": "Turnaround", "story": "Near-bankruptcy, debt exchange, unit economics fix"}
+  ]
+}
